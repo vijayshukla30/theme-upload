@@ -1,0 +1,7 @@
+!.build
+.build/*
+!.build/api.bundle.js
+build
+resources
+resources/*
+common/table-to-ui.common.js

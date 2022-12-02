@@ -19,11 +19,17 @@ const uploadTheme = async (req, res) => {
     
     const htmlFiles = await getHtmlFiles(dir, dir)
     const uploadedFile = await replaceURL(htmlFiles, files)
-    // const uploadedFile = await replaceURL(htmlFiles, [...jsFiles, ...cssFiles, ...imgFiles])
-    // console.log(htmlFiles)
+    console.log(uploadedFile)
+
+    return res.status(200).json({
+      data: 'theme uploaded successfully'
+    })
 
   } catch (e) {
     console.log(e)
+    return res.status(500).json({
+      msg: e.message
+    })
   }
 }
 

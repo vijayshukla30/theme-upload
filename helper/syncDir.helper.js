@@ -11,7 +11,7 @@ const syncDirectory = async (dir, baseDirectory) => {
     });
 
     function dirSync(currentDirPath, callback) {
-        fs.readdirSync(currentDirPath).forEach((name, i) => {
+        fs.readdirSync(currentDirPath).forEach((name) => {
             var filePath = path.join(currentDirPath, name);
             var stat = fs.statSync(filePath);
             if (stat.isFile() && !filePath.includes('html') && !filePath.includes('txt')) {
@@ -22,7 +22,7 @@ const syncDirectory = async (dir, baseDirectory) => {
         });
     }
 
-    dirSync(dir, async function (filePath, stat) {
+    dirSync(dir, async function (filePath) {
         let basePath = filePath.substring(baseDirectory.length);
         let bucketPath = `projectId/theme/${basePath}`
         let s3_url = `${process.env.S3_BUCKET_URL}/${bucketPath}`
@@ -35,7 +35,7 @@ const syncDirectory = async (dir, baseDirectory) => {
             Key: bucketPath,
             Body: fs.readFileSync(filePath),
         };
-        s3.upload(params, function (err, data) {
+        s3.upload(params, function (err) {
             if (err) {
                 console.log(err);
             } else {

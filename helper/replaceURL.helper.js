@@ -53,7 +53,7 @@ const replaceURL = async (htmlFiles, s3Urls) => {
             Key: _doc.key,
             Body: fs.readFileSync(_doc.systemPath),
         };
-        s3.upload(params, function (err, data) {
+        s3.upload(params, function (err) {
             if (err) {
                 console.log(err);
             } else {

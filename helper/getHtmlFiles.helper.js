@@ -1,11 +1,11 @@
 import fs from "fs";
 import path from "path";
 
-const getHtmlFiles = async (dir, baseDirectory, urls) => {
+const getHtmlFiles = async (dir, baseDirectory) => {
     let syncFiles = [];
 
     function dirSync(currentDirPath, callback) {
-        fs.readdirSync(currentDirPath).forEach((name, i) => {
+        fs.readdirSync(currentDirPath).forEach((name) => {
             var filePath = path.join(currentDirPath, name);
             var stat = fs.statSync(filePath);
             if (stat.isFile()) {
@@ -18,7 +18,7 @@ const getHtmlFiles = async (dir, baseDirectory, urls) => {
         });
     }
 
-    dirSync(dir, async function (filePath, stat) {
+    dirSync(dir, async function (filePath) {
         let basePath = filePath.substring(baseDirectory.length);
         let bucketPath = `projectId/theme/${basePath}`
         let s3_url = `${process.env.S3_BUCKET_URL}/${bucketPath}`
