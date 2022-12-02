@@ -5,7 +5,6 @@ import api from './routes/index';
 import connectDB from './config/dbConfig';
 import dotenv from 'dotenv'
 dotenv.config()
-// import { uploadTheme } from './controller'
 const app = express();
 const port = 3636;
 app.use(express.json());
@@ -24,9 +23,6 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
-
-// uploadTheme()
-// controller.app()
 
 connectDB();
 api({ app: app });
