@@ -1,25 +1,19 @@
 import syncDirectory from '../helper/syncDir.helper'
 import getHtmlFiles from '../helper/getHtmlFiles.helper'
 import replaceURL from '../helper/replaceURL.helper'
+import themeModel from '../model/export.model'
+import deleteS3Folder from '../helper/deleteS3Folder.helper'
 
 const uploadTheme = async (req, res) => {
   try {
+    const { projectId } = req.params;
     const dir = process.env.THEME_FOLDER
 
-    const files = await syncDirectory(dir, dir)
-
-    // const cssDir = dir+'assets/css/'
-    // const jsDir = dir+'assets/js/'
-    // const imgDir = dir+'assets/img/'
-
-    // const cssFiles = await syncDirectory(cssDir, dir)
-    // const jsFiles = await syncDirectory(jsDir, dir)
-    // const imgFiles = await syncDirectory(imgDir, dir)
-    // console.log(cssFiles, jsFiles, imgFiles)
-    
-    const htmlFiles = await getHtmlFiles(dir, dir)
-    const uploadedFile = await replaceURL(htmlFiles, files)
-    console.log(uploadedFile)
+    await deleteS3Folder(projectId)
+    const files = await syncDirectory(dir, projectId)
+    const htmlFiles = await getHtmlFiles(dir, projectId)
+    await replaceURL(htmlFiles, files)
+    await themeModel({ projectId: projectId, s3path: `${process.env.S3_BUCKET_URL}/${projectId}/theme`}).save()
 
     return res.status(200).json({
       data: 'theme uploaded successfully'

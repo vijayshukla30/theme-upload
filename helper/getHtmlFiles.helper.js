@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const getHtmlFiles = async (dir, baseDirectory) => {
+const getHtmlFiles = async (dir, projectId) => {
     let syncFiles = [];
 
     function dirSync(currentDirPath, callback) {
@@ -19,11 +19,11 @@ const getHtmlFiles = async (dir, baseDirectory) => {
     }
 
     dirSync(dir, async function (filePath) {
-        let basePath = filePath.substring(baseDirectory.length);
-        let bucketPath = `projectId/theme/${basePath}`
+        let basePath = filePath.substring(dir.length);
+        let bucketPath = `${projectId}/theme/${basePath}`
         let s3_url = `${process.env.S3_BUCKET_URL}/${bucketPath}`
         
-        syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath});
+        syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath });
     });
 
     return syncFiles

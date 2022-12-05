@@ -1,35 +1,22 @@
 import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 const { Schema } = mongoose;
 
 const exportSchema = new Schema(
   {
-    startTime: {
-      type: Date,
-      required: true,
-    },
-    endTime: {
-      type: Date,
-      required: true,
-    },
     projectId: {
       type: String,
       required: true,
     },
-    duration: {
-      type: Number,
-      required: true,
-    },
-    key: {
-      type: String,
-      required: true,
-    },
-    bucket: {
+    s3path: {
       type: String,
       required: true,
     },
     uuid: {
       type: String,
-      required: true,
+      default: () => {
+        return uuidv4()
+      }
     },
   },
   {

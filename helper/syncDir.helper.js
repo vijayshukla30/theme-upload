@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 var AWS = require("aws-sdk");
 
-const syncDirectory = async (dir, baseDirectory) => {
+const syncDirectory = async (dir, projectId) => {
     let syncFiles = [];
     
     const s3 = new AWS.S3({
@@ -23,8 +23,8 @@ const syncDirectory = async (dir, baseDirectory) => {
     }
 
     dirSync(dir, async function (filePath) {
-        let basePath = filePath.substring(baseDirectory.length);
-        let bucketPath = `projectId/theme/${basePath}`
+        let basePath = filePath.substring(dir.length);
+        let bucketPath = `${projectId}/theme/${basePath}`
         let s3_url = `${process.env.S3_BUCKET_URL}/${bucketPath}`
 
         syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath });

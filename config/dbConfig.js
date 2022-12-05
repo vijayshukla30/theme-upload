@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const MONGO_HOST = process.env.MONGO_HOST || 'localhost';
 const MONGO_PORT = process.env.MONGO_PORT || 27017;
-const MONGO_DB_NAME = process.env.MONGO_DB_NAME || 'code-export';
+const MONGO_DB_NAME = process.env.MONGO_DB_NAME || '';
 const MONGO_DB_USERNAME = process.env.MONGO_DB_USERNAME || '';
 const MONGO_DB_PASSWORD = process.env.MONGO_DB_PASSWORD || '';
 
