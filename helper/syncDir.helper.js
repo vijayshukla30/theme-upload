@@ -10,7 +10,7 @@ const {
 } = process.env
 
 const syncDirectory = async (dir, projectId) => {
-    let syncFiles = [];
+    let css = [], js = [], img = [], doc = [];
     
     const s3 = new AWS.S3({
         accessKeyId: AWS_ACCESS_KEY_ID,
@@ -34,7 +34,17 @@ const syncDirectory = async (dir, projectId) => {
         let bucketPath = `${projectId}/theme/${basePath}`
         let s3_url = `${S3_BUCKET_URL}/${bucketPath}`
 
-        syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath });
+        let fileExtention = path.extname(filePath);
+        let fileType = validateFileType(fileExtention)
+        if(fileType === 'css'){
+            css.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath })
+        } else if(fileType === 'js'){
+            js.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath })   
+        } else if(fileType === 'img'){
+            img.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath })
+        } else if(fileType === 'doc'){
+            doc.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath })
+        }
 
         let bucketName = AWS_S3_BUCKET
         let params = {
@@ -54,7 +64,24 @@ const syncDirectory = async (dir, projectId) => {
         });
     });
 
-    return syncFiles;
+    return { css, js, img, doc };
 };
+
+const validateFileType = (extention) => {
+    extention = extention.split('.')[1] || extention
+    let image = ['png', 'jpg', 'jpeg', 'svg', 'PNG', 'JPG', 'JPEG', 'SVG']
+    let css = ['css']
+    let js = ['js']
+
+    if(image.includes(extention)){
+        return 'img'
+    } else if(css.includes(extention)){
+        return 'css'
+    } else if(js.includes(extention)){
+        return 'js'
+    } else {
+        return 'doc'
+    }
+}
 
 export default syncDirectory;

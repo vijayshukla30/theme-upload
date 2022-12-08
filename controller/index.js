@@ -12,17 +12,23 @@ const uploadTheme = async (req, res) => {
 
     await deleteS3Folder(projectId)
     console.log('-------old files deleted--------')
-    const files = await syncDirectory(dir, projectId)
+
+    const { js, css, img, doc } = await syncDirectory(dir, projectId)
     console.log('-------asstes all file uploaded--------')
+
     const htmlFiles = await getHtmlFiles(dir, projectId)
     console.log('-------html file grouped--------')
-    await replaceURL(htmlFiles, files)
+
+    let syncFiles = [...js, ...css, ...img, ...doc]
+    await replaceURL(htmlFiles, syncFiles)
     console.log('-------html file uploaded--------')
+
     themeModel({ projectId: projectId, s3path: `${S3_BUCKET_URL}/${projectId}/theme`}).save().then()
     console.log('-------uploaded successfully--------')
 
     return res.status(200).json({
-      data: 'theme uploaded successfully'
+      data: 'theme uploaded successfully',
+      array: { css, js, img, doc }
     })
 
   } catch (e) {
