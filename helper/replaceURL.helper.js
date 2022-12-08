@@ -51,6 +51,7 @@ const replaceURL = async (htmlFiles, s3Urls) => {
             Bucket: bucketName,
             Key: _doc.key,
             Body: fs.readFileSync(_doc.systemPath),
+            ContentDisposition: 'inline',
             ACL: 'public-read'
         };
         await s3.upload(params, function (err) {

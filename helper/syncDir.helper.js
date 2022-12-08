@@ -34,12 +34,13 @@ const syncDirectory = async (dir, projectId) => {
         let s3_url = `${S3_BUCKET_URL}/${bucketPath}`
 
         syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath });
-        
+
         let bucketName = AWS_S3_BUCKET
         let params = {
             Bucket: bucketName,
             Key: bucketPath,
             Body: fs.readFileSync(filePath),
+            ContentDisposition: 'inline',
             ACL: 'public-read'
         };
         s3.upload(params, function (err) {
