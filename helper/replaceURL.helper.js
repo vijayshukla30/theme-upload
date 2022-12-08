@@ -1,12 +1,13 @@
 import fs from "fs";
 var AWS = require("aws-sdk");
 import * as cheerio from 'cheerio';
+const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET } = process.env
 
 const replaceURL = async (htmlFiles, s3Urls) => {
     let syncFiles = [];
     const s3 = new AWS.S3({
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
     });
 
     for(let i = 0; i < htmlFiles.length; i++){
@@ -18,7 +19,6 @@ const replaceURL = async (htmlFiles, s3Urls) => {
         let scriptObjects = $('script')
         let linkObjects = $('link')
         let imgObjects = $('img')
-
 
         scriptObjects.each((index, element) => {
             let href = $(element).attr('src')
@@ -46,20 +46,18 @@ const replaceURL = async (htmlFiles, s3Urls) => {
 
         await fs.writeFileSync(_doc.systemPath, $.html(), 'utf-8');
 
-        let bucketName = process.env.AWS_S3_BUCKET
+        let bucketName = AWS_S3_BUCKET
         let params = {
             Bucket: bucketName,
-            acl: "public-read",
             Key: _doc.key,
             Body: fs.readFileSync(_doc.systemPath),
+            ACL: 'public-read'
         };
-        s3.upload(params, function (err) {
+        await s3.upload(params, function (err) {
             if (err) {
                 console.log(err);
             } else {
-                console.log(
-                    "Successfully uploaded " + _doc.key + " to " + bucketName
-                );
+                console.log("Successfully uploaded " + _doc.s3_url);
             }
         });
     }

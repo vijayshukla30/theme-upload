@@ -6,14 +6,15 @@ import deleteS3Folder from '../helper/deleteS3Folder.helper'
 
 const uploadTheme = async (req, res) => {
   try {
+    const { THEME_FOLDER, S3_BUCKET_URL } = process.env
     const { projectId } = req.params;
-    const dir = process.env.THEME_FOLDER
+    const dir = THEME_FOLDER
 
     await deleteS3Folder(projectId)
     const files = await syncDirectory(dir, projectId)
     const htmlFiles = await getHtmlFiles(dir, projectId)
     await replaceURL(htmlFiles, files)
-    await themeModel({ projectId: projectId, s3path: `${process.env.S3_BUCKET_URL}/${projectId}/theme`}).save()
+    themeModel({ projectId: projectId, s3path: `${S3_BUCKET_URL}/${projectId}/theme`}).save().then()
 
     return res.status(200).json({
       data: 'theme uploaded successfully'

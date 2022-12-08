@@ -1,50 +1,45 @@
-
-import fs from "fs";
-import path from "path";
 var AWS = require("aws-sdk");
+const { AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env
 
 const deleteS3Folder = async (projectId) => {
     try {
-        const bucketName = process.env.AWS_S3_BUCKET
+        const bucketName = AWS_S3_BUCKET
         const s3 = new AWS.S3({
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            accessKeyId: AWS_ACCESS_KEY_ID,
+            secretAccessKey: AWS_SECRET_ACCESS_KEY,
         });
 
-        function emptyBucket(callback){
+        async function emptyBucket(callback){
+          try {
             var params = {
               Bucket: bucketName,
               Prefix: `${projectId}/theme/`
             };
           
-            s3.listObjects(params, function(err, data) {
-              if (err) return callback(err);
-          
-              if (data.Contents.length == 0) callback();
-          
-              params = { Bucket: bucketName };
-              params.Delete = {Objects:[]};
-              
-              data.Contents.forEach(function(content) {
-                console.log(content, 111)
-                params.Delete.Objects.push({Key: content.Key});
-              });
-          
-              s3.deleteObjects(params, function(err, data) {
-                if (err) return callback(err);
-                if (data.IsTruncated) {
-                  emptyBucket(callback);
-                } else {
-                  callback();
-                }
-              });
+            const data = await s3.listObjects(params).promise()
+            if (data.Contents.length == 0) callback();
+        
+            params = { Bucket: bucketName };
+            params.Delete = {Objects:[]};
+            
+            data.Contents.forEach(function(content) {
+              params.Delete.Objects.push({Key: content.Key});
             });
+
+            const deletedData = await s3.deleteObject(params)
+            if (deletedData.IsTruncated) {
+              await emptyBucket(callback);
+            } else {
+              callback();
+            }
+          } catch (e) {
+            callback(e)
+          }
         }
 
-        emptyBucket((data) => {
+        await emptyBucket((data) => {
             console.log(data)
         })
-
         return 
     } catch (e) {
         console.log(e)
