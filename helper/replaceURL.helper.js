@@ -1,6 +1,7 @@
 import fs from "fs";
-var AWS = require("aws-sdk");
+import AWS from "aws-sdk";
 import * as cheerio from 'cheerio';
+import mime from 'mime';
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET } = process.env
 
 const replaceURL = async (htmlFiles, s3Urls) => {
@@ -51,14 +52,15 @@ const replaceURL = async (htmlFiles, s3Urls) => {
             Bucket: bucketName,
             Key: _doc.key,
             Body: fs.readFileSync(_doc.systemPath),
+            ContentType: mime.getType(_doc.systemPath),
             ContentDisposition: 'inline',
             ACL: 'public-read'
         };
-        await s3.upload(params, function (err) {
+        await s3.putObject(params, function (err) {
             if (err) {
                 console.log(err);
             } else {
-                console.log("Successfully uploaded " + _doc.s3_url);
+                // console.log("Successfully uploaded " + _doc.s3_url);
             }
         });
     }

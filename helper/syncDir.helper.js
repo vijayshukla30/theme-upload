@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-var AWS = require("aws-sdk");
+import AWS from "aws-sdk";
+import mime from 'mime';
 const {
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
@@ -40,14 +41,15 @@ const syncDirectory = async (dir, projectId) => {
             Bucket: bucketName,
             Key: bucketPath,
             Body: fs.readFileSync(filePath),
+            ContentType: mime.getType(filePath),
             ContentDisposition: 'inline',
             ACL: 'public-read'
         };
-        s3.upload(params, function (err) {
+        s3.putObject(params, function (err) {
             if (err) {
                 console.log(err);
             } else {
-                console.log( "Successfully uploaded " + s3_url);
+                // console.log( "Successfully uploaded " + s3_url);
             }
         });
     });

@@ -1,4 +1,4 @@
-var AWS = require("aws-sdk");
+import AWS from "aws-sdk";
 const { AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env
 
 const deleteS3Folder = async (projectId) => {
@@ -17,17 +17,17 @@ const deleteS3Folder = async (projectId) => {
             };
           
             const data = await s3.listObjects(params).promise()
-            if (data.Contents.length == 0) callback();
+            if (data.Contents.length == 0) return callback();
         
             params = { Bucket: bucketName };
             params.Delete = {Objects:[]};
             
-            data.Contents.forEach(function(content) {
+            data.Contents.forEach(async function(content) {
               params.Delete.Objects.push({Key: content.Key});
             });
 
-            const deletedData = await s3.deleteObject(params)
-            if (deletedData.IsTruncated) {
+            const deletedData = await s3.deleteObjects(params).promise()
+            if(deletedData.IsTruncated){
               await emptyBucket(callback);
             } else {
               callback();
@@ -35,12 +35,12 @@ const deleteS3Folder = async (projectId) => {
           } catch (e) {
             callback(e)
           }
-        }
+      }
 
-        await emptyBucket((data) => {
-            console.log(data)
-        })
-        return 
+      await emptyBucket((data) => {
+          // console.log(data)
+      })
+      return 
     } catch (e) {
         console.log(e)
         return 
