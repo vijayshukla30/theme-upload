@@ -2,7 +2,7 @@ import fs from "fs";
 import AWS from "aws-sdk";
 import * as cheerio from 'cheerio';
 import mime from 'mime';
-const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET } = process.env
+const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET, BUCKET_PERMISSION } = process.env
 
 const replaceURL = async (htmlFiles, s3Urls) => {
     let syncFiles = [];
@@ -54,7 +54,7 @@ const replaceURL = async (htmlFiles, s3Urls) => {
             Body: fs.readFileSync(_doc.systemPath),
             ContentType: mime.getType(_doc.systemPath),
             ContentDisposition: 'inline',
-            ACL: 'public-read'
+            ACL: BUCKET_PERMISSION
         };
         await s3.putObject(params, function (err) {
             if (err) {

@@ -6,7 +6,8 @@ const {
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
     S3_BUCKET_URL,
-    AWS_S3_BUCKET
+    AWS_S3_BUCKET,
+    BUCKET_PERMISSION
 } = process.env
 
 const syncDirectory = async (dir, projectId) => {
@@ -53,7 +54,7 @@ const syncDirectory = async (dir, projectId) => {
             Body: fs.readFileSync(filePath),
             ContentType: mime.getType(filePath),
             ContentDisposition: 'inline',
-            ACL: 'public-read'
+            ACL: BUCKET_PERMISSION
         };
         s3.putObject(params, function (err) {
             if (err) {

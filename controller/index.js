@@ -3,12 +3,15 @@ import getHtmlFiles from '../helper/getHtmlFiles.helper'
 import replaceURL from '../helper/replaceURL.helper'
 import themeModel from '../model/export.model'
 import deleteS3Folder from '../helper/deleteS3Folder.helper'
+const { THEME_FOLDER, S3_BUCKET_URL } = process.env
 
 const uploadTheme = async (req, res) => {
   try {
-    const { THEME_FOLDER, S3_BUCKET_URL } = process.env
-    const { projectId } = req.params;
+    const { document_upload, params } = req
+    const { projectId } = params;
     const dir = THEME_FOLDER
+
+    console.log(document_upload)
 
     await deleteS3Folder(projectId)
     console.log('-------old files deleted--------')
