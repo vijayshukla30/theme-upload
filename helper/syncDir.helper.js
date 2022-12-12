@@ -7,7 +7,8 @@ const {
     AWS_SECRET_ACCESS_KEY,
     S3_BUCKET_URL,
     AWS_S3_BUCKET,
-    BUCKET_PERMISSION
+    BUCKET_PERMISSION,
+    BUCKET_PATH
 } = process.env
 
 const syncDirectory = async (dir, projectId) => {
@@ -32,7 +33,7 @@ const syncDirectory = async (dir, projectId) => {
 
     await dirSync(dir, async function (filePath) {
         let basePath = filePath.substring(dir.length);
-        let bucketPath = `${projectId}/theme/${basePath}`
+        let bucketPath = BUCKET_PATH.replace('projectId', projectId).replace('basePath', basePath)
         let s3_url = `${S3_BUCKET_URL}/${bucketPath}`
 
         let fileExtention = path.extname(filePath);

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-const { S3_BUCKET_URL } = process.env
+const { S3_BUCKET_URL, BUCKET_PATH } = process.env
 
 const getHtmlFiles = async (dir, projectId) => {
     let syncFiles = [];
@@ -21,7 +21,7 @@ const getHtmlFiles = async (dir, projectId) => {
 
     await dirSync(dir, async function (filePath) {
         let basePath = filePath.substring(dir.length);
-        let bucketPath = `${projectId}/theme/${basePath}`
+        let bucketPath = BUCKET_PATH.replace('projectId', projectId).replace('basePath', basePath)
         let s3_url = `${S3_BUCKET_URL}/${bucketPath}`
         
         syncFiles.push({ filePath: basePath, key: bucketPath, url: s3_url, systemPath: filePath });
