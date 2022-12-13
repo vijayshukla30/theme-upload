@@ -19,29 +19,33 @@ const uploadTheme = async (req, res) => {
     let zipName = `${fileName}${path.extname(s3zip?.Location)}`
     let zipDestination = `${dir}/${zipName}`
     let destination = `${dir}/${fileName}`
+    
+    const theme = await themeModel({ projectId: projectId, s3path: `${S3_BUCKET_URL}/${projectId}/theme`}).save()
 
     await downloadFile(s3zip?.Location, zipDestination, zipName)
     console.log('-------zip download & extracted--------')
 
-    await deleteS3Folder(projectId)
-    console.log('-------old files deleted--------')
-
+    await deleteS3Folder(`${projectId}/theme/`)
+    console.log('-------old files deleted---------------')
+    
     const { js, css, img, doc } = await syncDirectory(destination, projectId)
-    console.log('-------asstes all file uploaded--------')
-
+    console.log('-------assets file uploaded--------')
+    
     const htmlFiles = await getHtmlFiles(destination, projectId)
-    console.log('-------html file grouped--------')
+    console.log('-------html file grouped---------------')
 
     let syncFiles = [...js, ...css, ...img, ...doc]
     await replaceURL(htmlFiles, syncFiles)
-    console.log('-------html file uploaded--------')
-
-    themeModel({ projectId: projectId, s3path: `${S3_BUCKET_URL}/${projectId}/theme`}).save().then()
-    console.log('-------uploaded successfully--------')
+    console.log('-------html file uploaded--------------')
     
     await deleteZip(zipDestination, destination)
-    console.log('-------zip & folder removed--------')
-
+    console.log('-------zip & folder removed on server--')
+    
+    await deleteS3Folder(`${projectId}/zip/`)
+    console.log('-------delete zip on s3----------------')
+    
+    themeModel.deleteOne({ _id: theme._id}).then()
+    
     return res.status(200).json({
       data: 'theme uploaded successfully',
       array: { css, js, img, doc }

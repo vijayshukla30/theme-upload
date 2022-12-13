@@ -69,8 +69,14 @@ const replaceURL = async (htmlFiles, s3Urls) => {
 }
 
 const getUploadedS3Url = (localPath, s3Urls) => {
-    let find = s3Urls.find(_doc => _doc.filePath === localPath)
-    return find?.url || localPath
+    let staticPath = ['#', ' ', '', '@', '*', '$']
+    if(staticPath.some(_doc => localPath === _doc)){
+        return localPath
+    } else {
+        let find = s3Urls.find(_doc => _doc.filePath.includes(localPath))
+        return find?.url || localPath
+    }
 }
+
 
 export default replaceURL

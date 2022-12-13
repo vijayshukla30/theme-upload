@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 const { AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env
 
-const deleteS3Folder = async (projectId) => {
+const deleteS3Folder = async (prefix) => {
     try {
         const bucketName = AWS_S3_BUCKET
         const s3 = new AWS.S3({
@@ -13,7 +13,7 @@ const deleteS3Folder = async (projectId) => {
           try {
             var params = {
               Bucket: bucketName,
-              Prefix: `${projectId}/theme/`
+              Prefix: prefix
             };
           
             const data = await s3.listObjects(params).promise()
